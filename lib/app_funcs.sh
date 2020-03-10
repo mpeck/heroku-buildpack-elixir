@@ -77,8 +77,9 @@ function app_dependencies() {
   unset GIT_DIR
 
   cd $build_path
-  output_section "Fetching app dependencies with mix"
-  mix deps.get --only $MIX_ENV || exit 1
+  output_section "Fetching app dependencies"
+  make deps
+  # mix deps.get --only $MIX_ENV || exit 1
 
   export GIT_DIR=$git_dir_value
   cd - > /dev/null
@@ -102,14 +103,15 @@ function compile_app() {
   cd $build_path
   output_section "Compiling"
 
-  if [ -n "$hook_compile" ]; then
-     output_section "(using custom compile command)"
-     $hook_compile || exit 1
-  else
-     mix compile --force || exit 1
-  fi
+  # if [ -n "$hook_compile" ]; then
+  #    output_section "(using custom compile command)"
+  #    $hook_compile || exit 1
+  # else
+  #    mix compile --force || exit 1
+  # fi
 
-  mix deps.clean --unused
+  make compile
+  # mix deps.clean --unused
 
   export GIT_DIR=$git_dir_value
   cd - > /dev/null
@@ -120,7 +122,8 @@ function release_app() {
 
   if [ $release = true ]; then
     output_section "Building release"
-    mix release --overwrite
+    make release
+    # mix release --overwrite
   fi
 
   cd - > /dev/null
