@@ -1,6 +1,4 @@
 function download_elixir() {
-  fix_elixir_version
-
   # If a previous download does not exist, then always re-download
   if [ ${force_fetch} = true ] || [ ! -f ${cache_path}/$(elixir_download_file) ]; then
     clean_elixir_downloads
@@ -43,29 +41,9 @@ function install_elixir() {
   export LC_CTYPE=en_US.utf8
 }
 
-function fix_elixir_version() {
-  if [ ${#elixir_version[@]} -eq 2 ] && [ ${elixir_version[0]} = "branch" ]; then
-    force_fetch=true
-    elixir_version=${elixir_version[1]}
-
-  elif [ ${#elixir_version[@]} -eq 1 ]; then
-    force_fetch=false
-
-    # If we detect a version string (e.g. 1.14 or 1.14.0) we prefix it with "v"
-    if [[ ${elixir_version} =~ ^[0-9]+\.[0-9]+ ]]; then
-      elixir_version=v${elixir_version}
-    fi
-
-  else
-    output_line "Invalid Elixir version specified"
-    output_line "See the README for allowed formats at:"
-    output_line "https://github.com/HashNuke/heroku-buildpack-elixir"
-    exit 1
-  fi
-}
-
 function elixir_download_file() {
-  echo elixir-${elixir_version}.zip
+  local otp_version=$(otp_version ${erlang_version})
+  echo elixir-${elixir_version}-otp-${otp_version}.zip
 }
 
 function clean_elixir_downloads() {
